@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-// Gerar token
+
 Cypress.Commands.add('gerarToken', () => {
   return cy.request({
     method: 'POST',
@@ -40,22 +40,19 @@ Cypress.Commands.add('gerarToken', () => {
 })
 
 
-Cypress.Commands.add('criarUsuario', (token, nome, email, senha) => {
-  return cy.request({
-    method: 'POST',
-    url: '/api/users',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    body: {
-      name: nome,
-      email: email,
-      password: senha
-    }
-  }).then((response) => {
-    expect(response.status).to.eq(201)
-    return response.body.id
-  })
+Cypress.Commands.add('cadastrarUsuario', (nome, email, senha) => {
+    return cy.api({
+        method: 'POST',
+        url: 'users',
+        body: {
+            name: nome,
+            email: email,
+            password: senha
+        }
+    }).then(response => {
+        expect(response.status).to.equal(201)
+        return response.body.id
+    })
 })
 
 
