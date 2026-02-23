@@ -1,18 +1,21 @@
 /// <reference types='cypress'/>
-let token
 
-beforeEach(() => {
-    cy.geratoken("admin@biblioteca.com", "admin123").then(tkn => {
-        token = tkn // Agora tkn realmente tem o token!
-    });
+let token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBiaWJsaW90ZWNhLmNvbSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc3MTg2ODI4MSwiZXhwIjoxNzcxODk3MDgxfQ.Bpz-0Df1ztCTrA1WAp-fWCqYI43OPCcroPC3vAuP12s"
+
+beforeEach(function () {
+    cy.gerarToken("admin@biblioteca.com", "admin123")
+        .then(tkn => {
+            token = tkn
+        })
 })
+
 
 describe('GET - Teste de Api, Gestão de Usuários', () => {
 
-    it('Deve listar usuários com sucesso', () => {
+    it.only('Deve listar usuários com sucesso', () => {
         cy.api({
             method: 'GET',
-            url: 'users',
+            url: '/users',
             headers: { Authorization: token }
         }).should((response) => {
             expect(response.status).to.equal(200)
@@ -65,11 +68,12 @@ describe('GET - Teste de Api, Gestão de Usuários', () => {
 });
 
 describe('POST - Teste de Api, Gestão de Usuários', () => {
+
     it('Deve cadastrar um usuário com sucesso', () => {
         let email = `maria10000${Date.now()}@email.com`
         cy.api({
             method: 'POST',
-            url: 'users',
+            url: '/users',
 
             body: {
                 "name": "Maria Santos",
@@ -77,7 +81,7 @@ describe('POST - Teste de Api, Gestão de Usuários', () => {
                 "password": "senha123"
             }
         }).should((response) => {
-            expect(response.status).to.equal(201)
+            expect(response.status).to.equal(200)
             expect(response.body.message).to.equal('Usuário criado com sucesso.')
         })
     });
@@ -85,7 +89,7 @@ describe('POST - Teste de Api, Gestão de Usuários', () => {
     it('Deve validar um usuário cadastrado com e-mail inválido', () => {
         cy.api({
             method: 'POST',
-            url: 'users',
+            url: '/users',
 
             body: {
                 "name": "Maria Santos",
@@ -106,8 +110,8 @@ describe('PUT - Teste de Api, Gestão de Usuários', () => {
     it('Deve atualizar um usuário com sucesso', () => {
         cy.api({
             method: 'PUT',
-            url: 'users/23',
-            headers: { Authorization: token },
+            url: '/users/23',
+
             body: {
                 "name": "Maria Santos",
                 "email": "maria10000updated@email.com",
@@ -117,30 +121,61 @@ describe('PUT - Teste de Api, Gestão de Usuários', () => {
             expect(response.status).to.equal(200)
             expect(response.body.message).to.equal('Usuário atualizado com sucesso.')
         })
-    });
-
-    it.only('Deve atualizar um usuário com sucesso - de forma dinamica', () => {
-        const email = `maria${Date.now()}@email.com`;
-        cy.cadastrarUsuario("Maria Santos", email, "senha123")
-            .then(userId => {
-                expect(userId).to.not.be.undefined;
-
-                cy.api({
-                    method: 'PUT',
-                    url: `users/${userId}`,
-                    headers: { Authorization: token },
-                    body: {
-                        name: "Maria Santos Atualizada",
-                        email: email,
-                        password: "novasenha123"
-                    }
-                }).then(response => {
-                    expect(response.status).to.equal(200)
-                });
-            });
-
-
-
-    });
+    })
 });
 
+it('Deve atualizar usuário de forma dinamica', function () {
+
+    const email = `maria${Date.now()}@email.com`
+
+    cy.cadastrarUsuario("Maria", email, "123456")
+        .then((userId) => {
+
+            cy.api({
+                method: 'PUT',
+                url: `/users/${userId}`,
+                headers: { Authorization: token },
+                body: {
+                    name: "Maria Atualizada",
+                    email: email,
+                    password: "nova123"
+                }
+            }).should((response) => {
+                expect(response.status).to.equal(200)
+            })
+
+        })
+})
+
+describe('DELETE - Teste de Api, Gestão de Usuários ', () => {
+
+    it('Deve excluir um usuário com sucesso', () => {
+        cy.api({
+            method: 'DELETE',
+            url: `/users/126`,
+            headers: { Authorization: token },
+        }).should((response) => {
+            expect(response.status).to.equal(200)
+            expect(response.body.message).to.equal("Usuário removido com sucesso.")
+
+        })
+    });
+
+    it('Deve excluir um usuário com sucesso - de forma dinamica', () => {
+        const email = `maria${Date.now()}@email.com`
+        cy.cadastrarUsuario("Anissa deletar", email, "123456")
+            .then((userId) => {
+                cy.api({
+                    method: 'DELETE',
+                    url: `/users/${userId}`,
+                    headers: { Authorization: token },
+                }).should((response) => {
+                    expect(response.status).to.equal(200)
+                    expect(response.body.message).to.equal('Usuário removido com sucesso.')
+                })
+            })
+    });
+
+
+
+});

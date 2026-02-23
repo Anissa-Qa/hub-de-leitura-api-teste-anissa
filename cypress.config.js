@@ -4,6 +4,8 @@ module.exports = defineConfig({
   video: false,
 
   e2e: {
-    baseUrl: "http://localhost:3000/api/",
+    baseUrl: "http://localhost:3000/api",
   },
 });
+
+

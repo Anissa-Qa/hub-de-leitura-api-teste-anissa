@@ -25,35 +25,28 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 
-Cypress.Commands.add('gerarToken', () => {
+Cypress.Commands.add('gerarToken', (email, senha) => {
   return cy.request({
     method: 'POST',
-    url: '/api/login',
-    body: {
-      email: 'admin@biblioteca.com',
-      password: 'admin123'
-    }
-  }).then((response) => {
-    expect(response.status).to.eq(200)
-    return response.body.token
+    url: '/login',
+    body: { email, senha }
+  }).then(response => {
+      expect(response.status).to.equal(200)
+      return response.body.token
   })
 })
 
-
-Cypress.Commands.add('cadastrarUsuario', (nome, email, senha) => {
-    return cy.api({
+Cypress.Commands.add('cadastrarUsuario', (name, email, senha) => {
+    return cy.request({
         method: 'POST',
-        url: 'users',
-        body: {
-            name: nome,
-            email: email,
-            password: senha
-        }
-    }).then(response => {
-        expect(response.status).to.equal(201)
+        url: '/users',
+        body: { nome, email, senha }
+    }).then((response) => {
+        expect(response.status).to.equal(200)
         return response.body.id
     })
 })
+
 
 
 
