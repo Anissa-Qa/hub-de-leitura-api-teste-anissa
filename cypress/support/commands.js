@@ -25,20 +25,6 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 
-Cypress.Commands.add('gerarToken', (email, senha) => {
-    return cy.request({
-        method: 'POST',
-        url: '/login',
-        body: {
-            email: email,
-            senha: senha
-        }
-    }).then(response => {
-        expect(response.status).to.equal(200)
-        return response.body.token
-    })
-})
-
 Cypress.Commands.add('cadastrarUsuario', (nome, email, senha) => {
     return cy.request({
         method: 'POST',

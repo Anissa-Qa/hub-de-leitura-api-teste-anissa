@@ -1,12 +1,6 @@
 /// <reference types='cypress'/>
 
-let token 
-beforeEach(function () {
-    cy.gerarToken("admin@biblioteca.com", "admin123")
-        .then(tkn => {
-            token = tkn
-        })
-})
+let token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBiaWJsaW90ZWNhLmNvbSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTc3MTk1MTI0MSwiZXhwIjoxNzcxOTgwMDQxfQ.hG3D--50N-3YgiQPhvqSLI-1wN-af_8DkVriRJLKgvo"
 
 
 describe('GET - Teste de Api, Gestão de Usuários', () => {
@@ -68,7 +62,7 @@ describe('GET - Teste de Api, Gestão de Usuários', () => {
 
 describe('POST - Teste de Api, Gestão de Usuários', () => {
 
-    it.only('Deve cadastrar um usuário com sucesso', () => {
+    it('Deve cadastrar um usuário com sucesso', () => {
         let email = `maria10000${Date.now()}@email.com`
         cy.api({
             method: 'POST',
@@ -80,7 +74,7 @@ describe('POST - Teste de Api, Gestão de Usuários', () => {
                 "password": "senha123"
             }
         }).should((response) => {
-            expect(response.status).to.equal(200)
+            expect(response.status).to.equal(201)
             expect(response.body.message).to.equal('Usuário criado com sucesso.')
         })
     });
@@ -110,7 +104,7 @@ describe('PUT - Teste de Api, Gestão de Usuários', () => {
         cy.api({
             method: 'PUT',
             url: '/users/23',
-
+headers: { Authorization: token },  
             body: {
                 "name": "Maria Santos",
                 "email": "maria10000updated@email.com",
@@ -151,7 +145,7 @@ describe('DELETE - Teste de Api, Gestão de Usuários ', () => {
     it('Deve excluir um usuário com sucesso', () => {
         cy.api({
             method: 'DELETE',
-            url: `/users/126`,
+            url: `/users/109`,
             headers: { Authorization: token },
         }).should((response) => {
             expect(response.status).to.equal(200)
